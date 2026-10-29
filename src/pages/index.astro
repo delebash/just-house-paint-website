@@ -1,0 +1,418 @@
+---
+// SPDX-License-Identifier: MIT
+// The overview: what the app does, shown on a real house painted in the app; how it works, in its four steps; the AI
+// photo; the paints and the schemes; what stays on your computer; the questions people ask first.
+import { Image } from "astro:assets";
+import BeforeAfter from "../components/BeforeAfter.astro";
+import Chip from "../components/Chip.astro";
+import Base from "../layouts/Base.astro";
+import { DOWNLOAD } from "../data/site.js";
+import before from "../assets/photos/before.jpg";
+import after from "../assets/photos/after.jpg";
+import ai from "../assets/photos/ai.jpg";
+import yourHouses from "../assets/screens/your-houses.webp";
+import parts from "../assets/screens/house-parts.webp";
+import painted from "../assets/screens/house-painted.webp";
+import compare from "../assets/screens/house-compare.webp";
+import paintColors from "../assets/screens/paint-colors.webp";
+import schemes from "../assets/screens/house-schemes.webp";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const shot = { widths: [720, 1100, 1440], sizes: "(min-width: 1180px) 760px, (min-width: 900px) 64vw, 100vw" };
+const steps = [
+  {
+    title: "Add a photo",
+    text: "Take a photo of the front of your house in daylight and add it. The app keeps your original and paints on a copy.",
+    img: yourHouses,
+    alt: "Your houses: three houses, each with a design",
+  },
+  {
+    title: "Find the parts",
+    text: "One click, and a vision model running on your computer outlines the body, the trim, the doors, the shutters, the gutters and more. Fix anything it missed with a brush, an eraser or a box.",
+    img: parts,
+    alt: "A house with all its parts outlined, listed beside it",
+  },
+  {
+    title: "Pick real paints",
+    text: "Choose a brand's paint for each part. It shows at once in your photo's own light and shadow, and each part says how close the painted wall comes to the chip.",
+    img: painted,
+    alt: "The house painted Evergreen Fog with Pure White trim and Naval shutters, each part with its paint and ΔE",
+  },
+  {
+    title: "Compare and keep",
+    text: "Slide between the photo and the new colors, save the colors as a design, and take the color list or a color card to the store.",
+    img: compare,
+    alt: "The house split down the middle: the photo as taken on the left, painted on the right",
+  },
+];
+const faq = [
+  {
+    q: "What does it run on?",
+    a: "Windows 10 and 11 (64-bit), macOS on Apple silicon (M1 and later), and Linux (Ubuntu 22.04 or newer). The AI photo needs macOS 26 or Ubuntu 24.04 or newer.",
+  },
+  {
+    q: "Do I need a graphics card?",
+    a: "No. Finding the parts and painting work on any of those computers; a graphics card makes finding the parts quicker. The AI photo takes about 20 seconds on Windows with an 8 GB NVIDIA card and about ten minutes with no graphics card it can use.",
+  },
+  {
+    q: "How close are the colors to the real paint?",
+    a: "On a normally lit wall the painted photo shows the paint chip's own color, and each part shows its ΔE: under 1 is a difference most people can't see. A screen still isn't a can of paint, so check a real chip before you buy.",
+  },
+  {
+    q: "What does it download?",
+    a: "Each brand's color list, by itself the first time the app opens (turn a brand off on Paint colors if you don't want it). The part finder's model (3.1 GB) and the AI photo's engine and model download only when you press their buttons, with their size shown first. Your photos never leave your computer.",
+  },
+  {
+    q: "Why does Windows or macOS warn about the installer?",
+    a: "The installers aren't signed with a publisher's certificate yet. Getting started in the docs shows the one step that opens it on each system.",
+  },
+  {
+    q: "Does it cost anything?",
+    a: "No. It is free and open source under the MIT licence. Online AI providers, if you choose one, charge you for what you use.",
+  },
+];
+---
+<Base>
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <h1>See your house in real paint before you buy a can.</h1>
+        <p class="hero__lede">
+          Add a photo of your house. Just House Paint finds the body, the trim, the doors and the shutters, and paints
+          them with real brand colors in your photo's own light — all on your own computer.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={DOWNLOAD}>Download it free</a>
+          <a class="btn btn--quiet" href={`${base}/docs/getting-started/`}>Read the docs</a>
+        </div>
+        <p class="hero__small">Windows, macOS on Apple silicon, and Linux. Nothing to sign up for.</p>
+      </div>
+      <figure class="hero__figure">
+        <BeforeAfter
+          before={before}
+          after={after}
+          beforeAlt="A white two-story house with black shutters, as photographed"
+          afterAlt="The same house painted in the app: gray-green body, white trim, navy shutters"
+        />
+        <figcaption class="hero__caption">
+          <span>Drag the line. On the right, the paints chosen in the app:</span>
+          <div class="hero__chips">
+            <Chip hex="#95978a" part="Body" name="Evergreen Fog" code="SW 9130" />
+            <Chip hex="#edece6" part="Trim and garage door" name="Pure White" code="SW 7005" />
+            <Chip hex="#2f3d4c" part="Shutters and door" name="Naval" code="SW 6244" />
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="how">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 id="how">How it works</h2>
+        <p>Four steps from a photo to a house you can compare color by color.</p>
+      </div>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li class="step">
+            <div class="step__text">
+              <span class="step__n" aria-hidden="true">{i + 1}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </div>
+            <Image class="screen" src={s.img} alt={s.alt} {...shot} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section aiphoto" aria-labelledby="ai">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 id="ai">The whole house, newly painted</h2>
+        <p>
+          The AI photo has an image model, FLUX.2 [klein] 4B, redraw only the parts you painted, with its own sense of
+          light. The app then puts your photo back everywhere else and locks what the model repainted to your paints.
+          Its colors are approximate: the painted photo stays the accurate view.
+        </p>
+      </div>
+      <div class="pair">
+        <figure>
+          <Image src={before} alt="The house as photographed" widths={[560, 900, 1200]} sizes="(min-width: 900px) 50vw, 100vw" />
+          <figcaption>As photographed</figcaption>
+        </figure>
+        <figure>
+          <Image src={ai} alt="The AI photo of the house in Evergreen Fog, Pure White and Naval" widths={[560, 900, 1200]} sizes="(min-width: 900px) 50vw, 100vw" />
+          <figcaption>The AI photo, drawn in 23 seconds on an 8 GB NVIDIA card</figcaption>
+        </figure>
+      </div>
+      <p class="aiphoto__note">
+        It runs on your computer too, once you install its engine and model from the app. About 20 seconds a picture on
+        Windows with an 8 GB NVIDIA graphics card. <a href={`${base}/docs/ai-photo/`}>About the AI photo</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="paints">
+    <div class="wrap duo">
+      <div class="duo__text">
+        <h2 id="paints">Real paints from seven brands</h2>
+        <p>
+          Sherwin-Williams, Behr, Benjamin Moore, Valspar, PPG / Glidden, HGTV Home by Sherwin-Williams and Dutch Boy.
+          Each brand's colors load by themselves the first time the app opens and stay on your computer. Search by name
+          or number, browse by color family, or import a brand's palette file.
+        </p>
+      </div>
+      <Image class="screen" src={paintColors} alt="Paint colors: the seven brands with their color counts" {...shot} />
+    </div>
+    <div class="wrap duo duo--flip">
+      <div class="duo__text">
+        <h3 class="duo__h">Color schemes that are real paints</h3>
+        <p>
+          Start from a paint you like, take the brand's own coordinating colors, or ask an AI model for schemes that
+          suit what stays the same — the roof, the stone, the windows. Every color is snapped to the brand's nearest real
+          paint, and Apply puts the body, trim and door colors on your house.
+        </p>
+      </div>
+      <Image class="screen" src={schemes} alt="The Schemes tab: the brand's coordinating colors around Evergreen Fog" {...shot} />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="yours">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 id="yours">Yours, on your computer</h2>
+      </div>
+      <div class="three">
+        <div>
+          <h3>Your photos stay put</h3>
+          <p>Nothing is uploaded. The photos, the parts the app finds and your designs are kept in one folder on your computer, backed up with one file.</p>
+        </div>
+        <div>
+          <h3>AI on your terms</h3>
+          <p>A local model runs the color schemes for free. Or use your own key for OpenAI, Anthropic, Gemini, OpenRouter, DeepSeek, xAI, Mistral or any OpenAI-compatible service.</p>
+        </div>
+        <div>
+          <h3>Free and open source</h3>
+          <p>MIT licensed, with the code on <a href="https://github.com/delebash/just-house-paint">GitHub</a>. Run it as a desktop app, or run its server and open it in a browser on your home network.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq">
+    <div class="wrap faq">
+      <h2 id="faq">Questions</h2>
+      <div class="faq__list">
+        {faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(36px, 6vw, 80px) clamp(48px, 7vw, 96px);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(28px, 4vw, 56px);
+    align-items: center;
+  }
+  .hero__text {
+    display: grid;
+    gap: 22px;
+    align-content: center;
+  }
+  .hero__text h1 {
+    max-width: 14ch;
+  }
+  .hero__lede {
+    font-size: 1.2rem;
+    color: var(--ink-2);
+    max-width: 40ch;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hero__small {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .hero__figure {
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .hero__caption {
+    display: grid;
+    gap: 10px;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .hero__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(40px, 6vw, 72px);
+  }
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(20px, 4vw, 56px);
+    align-items: center;
+  }
+  .step__text {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  /* the text face's figures: Young Serif's old-style 1 reads as an I */
+  .step__n {
+    font-size: 2.4rem;
+    font-weight: 750;
+    line-height: 1;
+    color: var(--fog);
+    font-variant-numeric: lining-nums;
+  }
+  .step__text p {
+    color: var(--ink-2);
+  }
+  @media (max-width: 900px) {
+    .step {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(12px, 2vw, 24px);
+  }
+  .pair figure {
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .pair img {
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+  }
+  .pair figcaption {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .aiphoto__note {
+    margin-top: 24px;
+    color: var(--ink-2);
+  }
+  @media (max-width: 700px) {
+    .pair {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .duo {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(20px, 4vw, 56px);
+    align-items: center;
+  }
+  .duo + .duo {
+    margin-top: clamp(48px, 7vw, 88px);
+  }
+  .duo--flip .duo__text {
+    order: 2;
+  }
+  .duo__text {
+    display: grid;
+    gap: 14px;
+  }
+  .duo__text p {
+    color: var(--ink-2);
+  }
+  .duo__h {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+    line-height: 1.15;
+  }
+  @media (max-width: 900px) {
+    .duo {
+      grid-template-columns: 1fr;
+    }
+    .duo--flip .duo__text {
+      order: 0;
+    }
+  }
+
+  .three {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 48px);
+  }
+  .three > div {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding-top: 18px;
+    border-top: 3px solid var(--fog);
+  }
+  .three p {
+    color: var(--ink-2);
+  }
+  @media (max-width: 860px) {
+    .three {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(20px, 4vw, 56px);
+  }
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    cursor: pointer;
+    padding: 18px 0;
+    font-weight: 650;
+    font-size: 1.05rem;
+    list-style-position: outside;
+  }
+  details p {
+    padding: 0 0 20px;
+    color: var(--ink-2);
+  }
+  @media (max-width: 860px) {
+    .faq {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

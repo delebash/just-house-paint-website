@@ -1,0 +1,325 @@
+---
+// SPDX-License-Identifier: MIT
+// Every page of the site but the docs (Starlight draws those): the header, the footer, the light/dark switch, and a
+// <dialog> that shows a screenshot at full size. The theme is stored as `jhp-theme`, which astro.config.js's bridge
+// hands to the docs.
+import "../styles/fonts.css";
+import "../styles/global.css";
+import { Image } from "astro:assets";
+import mark from "../assets/mark.svg";
+import { APP_REPO, DOWNLOAD } from "../data/site.js";
+
+const {
+  title = "Just House Paint — see your house in real paint colors",
+  description = "A free desktop app: add a photo of your house, and it finds the parts and paints them with real brand paints in the photo's own light — on your own computer.",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const path = Astro.url.pathname.replace(/\/$/, "");
+const nav = [
+  { href: `${base}/`, label: "Overview", on: path === base || path === "" },
+  { href: `${base}/features/`, label: "Features", on: path === `${base}/features` },
+  { href: `${base}/docs/getting-started/`, label: "Docs", on: path.startsWith(`${base}/docs`) },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script is:inline>
+      // the stored choice before the first paint, so there is no flash
+      try {
+        const saved = localStorage.getItem("jhp-theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <header class="top">
+      <div class="wrap top__row">
+        <a class="brand" href={`${base}/`}>
+          <Image src={mark} alt="" width={28} height={28} />
+          <span>Just House Paint</span>
+        </a>
+        <nav class="top__nav" aria-label="Site">
+          {nav.map((n) => <a href={n.href} aria-current={n.on ? "page" : undefined}>{n.label}</a>)}
+          <a href={APP_REPO}>GitHub</a>
+        </nav>
+        <div class="top__end">
+          <button class="theme" type="button" aria-label="Dark theme" aria-pressed="false" data-theme-toggle>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" /></svg>
+          </button>
+          <a class="btn btn--primary top__download" href={DOWNLOAD}>Download</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot__grid">
+        <div class="foot__about">
+          <a class="brand" href={`${base}/`}>
+            <Image src={mark} alt="" width={24} height={24} />
+            <span>Just House Paint</span>
+          </a>
+          <p>Free and open source under the MIT licence. Windows, macOS on Apple silicon, and Linux.</p>
+        </div>
+        <nav class="foot__links" aria-label="More">
+          <a href={DOWNLOAD}>Download</a>
+          <a href={`${base}/docs/getting-started/`}>Getting started</a>
+          <a href={`${base}/docs/troubleshooting/`}>Troubleshooting</a>
+          <a href={APP_REPO}>Source code</a>
+          <a href={`${APP_REPO}/issues`}>Report a problem</a>
+        </nav>
+        <div class="foot__notes">
+          <p>
+            Colors on a screen are close to the paint, never the same: check a real paint chip before you buy. Brand
+            names and color names belong to their owners; this app isn't connected to any of them.
+          </p>
+          <p>
+            The house photos are from Wikimedia Commons:
+            <a href="https://commons.wikimedia.org/wiki/File:House_at_10700_Boyd_Drive,_Clarence,_New_York_-_20201001.jpg">House at 10700 Boyd Drive, Clarence, New York</a>
+            by Andre Carrotflower (CC BY-SA 4.0),
+            <a href="https://commons.wikimedia.org/wiki/File:New_House_Siding_(23781939893).jpg">New House Siding</a>
+            by daryl_mitchell (CC BY-SA 2.0) and
+            <a href="https://commons.wikimedia.org/wiki/File:19_Ickwell_Road,_Northill,_February_2024.jpg">19 Ickwell Road, Northill</a>
+            by No Swan So Fine (CC BY-SA 4.0). The pictures made from them here — the screenshots, the painted and AI
+            photos — are shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <dialog class="zoom" aria-label="Screenshot at full size">
+      <form method="dialog"><button class="zoom__close" aria-label="Close">✕</button></form>
+      <img alt="" />
+    </dialog>
+
+    <script>
+      const root = document.documentElement;
+      const toggle = document.querySelector("[data-theme-toggle]");
+      const isDark = () => root.dataset.theme === "dark" || (!root.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+      const show = () => toggle?.setAttribute("aria-pressed", String(isDark()));
+      show();
+      toggle?.addEventListener("click", () => {
+        const next = isDark() ? "light" : "dark";
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem("jhp-theme", next);
+        } catch {}
+        show();
+      });
+
+      // a screenshot opens at full size in the dialog; Escape, the ✕ or a click outside closes it
+      const zoom = document.querySelector("dialog.zoom");
+      const big = zoom?.querySelector("img");
+      for (const img of document.querySelectorAll("img.screen")) {
+        img.tabIndex = 0;
+        img.setAttribute("role", "button");
+        img.setAttribute("aria-label", `${img.alt} — show at full size`);
+        const open = () => {
+          if (!zoom || !big) return;
+          big.src = img.dataset.full || img.currentSrc || img.src;
+          big.alt = img.alt;
+          zoom.showModal();
+        };
+        img.addEventListener("click", open);
+        img.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+      }
+      zoom?.addEventListener("click", (e) => {
+        if (e.target === zoom) zoom.close();
+      });
+    </script>
+
+    <style>
+      .skip {
+        position: absolute;
+        left: 12px;
+        top: -60px;
+        padding: 8px 14px;
+        background: var(--accent);
+        color: var(--on-accent);
+        border-radius: var(--r);
+        z-index: 10;
+      }
+      .skip:focus {
+        top: 12px;
+      }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: color-mix(in srgb, var(--paper) 92%, transparent);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+      }
+      .top__row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        min-height: 64px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.05rem;
+        white-space: nowrap;
+      }
+      .top__nav {
+        display: flex;
+        gap: 22px;
+        margin-right: auto;
+      }
+      .top__nav a {
+        color: var(--ink-2);
+        text-decoration: none;
+        padding-block: 6px;
+        border-bottom: 2px solid transparent;
+      }
+      .top__nav a:hover {
+        color: var(--ink);
+      }
+      .top__nav a[aria-current="page"] {
+        color: var(--ink);
+        border-bottom-color: var(--fog);
+      }
+      .top__end {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .theme {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--r);
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink-2);
+        cursor: pointer;
+      }
+      .theme:hover {
+        color: var(--ink);
+        border-color: var(--ink-2);
+      }
+      @media (max-width: 760px) {
+        .top__row {
+          flex-wrap: wrap;
+          gap: 4px 16px;
+          padding-block: 10px;
+        }
+        .top__nav {
+          order: 3;
+          width: 100%;
+          gap: 18px;
+          overflow-x: auto;
+        }
+        .top__end {
+          margin-left: auto;
+        }
+        .top__download {
+          min-height: 40px;
+          padding-inline: 14px;
+        }
+      }
+
+      .foot {
+        border-top: 1px solid var(--line);
+        background: var(--paper-2);
+        padding-block: 48px 56px;
+        font-size: 0.95rem;
+        color: var(--ink-2);
+      }
+      .foot__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.7fr) minmax(0, 1.6fr);
+        gap: 32px 48px;
+      }
+      .foot__about {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+      .foot__links {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+      .foot__links a {
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .foot__links a:hover {
+        text-decoration: underline;
+      }
+      .foot__notes {
+        display: grid;
+        gap: 12px;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+      .foot__notes a {
+        color: var(--ink-2);
+      }
+      @media (max-width: 860px) {
+        .foot__grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .zoom {
+        max-width: min(96vw, 1600px);
+        max-height: 94vh;
+        padding: 0;
+        border: 0;
+        border-radius: var(--r);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+      .zoom::backdrop {
+        background: rgb(10 14 18 / 0.72);
+      }
+      .zoom img {
+        max-width: 100%;
+        max-height: 94vh;
+        width: auto;
+      }
+      .zoom__close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 0;
+        background: rgb(20 25 30 / 0.7);
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </body>
+</html>

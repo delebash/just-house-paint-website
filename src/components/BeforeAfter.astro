@@ -1,0 +1,134 @@
+---
+// SPDX-License-Identifier: MIT
+// The photo as taken and the same photo painted in the app, one over the other, with the line between them the
+// visitor drags — the app's own Compare. The line is a range input (keyboard: the arrow keys), drawn over the
+// picture; on load it sweeps once from the right to the middle (not when the visitor asks for reduced motion).
+import { Image } from "astro:assets";
+
+const { before, after, beforeAlt, afterAlt } = Astro.props;
+const widths = [640, 960, 1280, 1600, 2000];
+const sizes = "(min-width: 1180px) 700px, (min-width: 900px) 58vw, 100vw";
+---
+<div class="ba" style="--split: 50%">
+  <Image class="ba__img" src={after} alt={afterAlt} widths={widths} sizes={sizes} loading="eager" fetchpriority="high" />
+  <Image class="ba__img ba__before" src={before} alt={beforeAlt} widths={widths} sizes={sizes} loading="eager" />
+  <span class="ba__tag ba__tag--left" aria-hidden="true">As photographed</span>
+  <span class="ba__tag ba__tag--right" aria-hidden="true">Painted in the app</span>
+  <div class="ba__line" aria-hidden="true"><span class="ba__knob"></span></div>
+  <input class="ba__range" type="range" min="0" max="100" step="0.5" value="50" aria-label="Where the photo as taken ends" />
+</div>
+
+<script>
+  for (const ba of document.querySelectorAll(".ba")) {
+    const range = ba.querySelector(".ba__range");
+    const set = (v) => ba.style.setProperty("--split", `${v}%`);
+    range.addEventListener("input", () => set(range.value));
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // the one moment the page moves by itself: the line comes in from the right and rests in the middle
+      const t0 = performance.now();
+      const from = 94;
+      const to = Number(range.value);
+      const step = (t) => {
+        const k = Math.min(1, (t - t0) / 1400);
+        const ease = 1 - (1 - k) ** 3;
+        set(from + (to - from) * ease);
+        if (k < 1 && document.activeElement !== range) requestAnimationFrame(step);
+        else set(range.value);
+      };
+      set(from);
+      requestAnimationFrame(step);
+    }
+  }
+</script>
+
+<style>
+  .ba {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--paper-2);
+    box-shadow: var(--shadow);
+    touch-action: pan-y;
+  }
+  .ba:has(.ba__range:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .ba__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ba__before {
+    clip-path: inset(0 calc(100% - var(--split)) 0 0);
+  }
+  .ba__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    width: 2px;
+    margin-left: -1px;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25);
+    pointer-events: none;
+  }
+  .ba__knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 38px;
+    height: 38px;
+    margin: -19px 0 0 -19px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
+  }
+  .ba__knob::before,
+  .ba__knob::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    margin-top: -5px;
+    border: 5px solid transparent;
+  }
+  .ba__knob::before {
+    left: 7px;
+    border-right-color: var(--naval);
+  }
+  .ba__knob::after {
+    right: 7px;
+    border-left-color: var(--naval);
+  }
+  .ba__tag {
+    position: absolute;
+    top: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgb(20 25 30 / 0.62);
+    color: #fff;
+    font-size: 0.8rem;
+    pointer-events: none;
+  }
+  .ba__tag--left {
+    left: 12px;
+  }
+  .ba__tag--right {
+    right: 12px;
+  }
+  .ba__range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    appearance: none;
+  }
+</style>

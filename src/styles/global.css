@@ -1,0 +1,203 @@
+/* SPDX-License-Identifier: MIT
+   The site's look, built on the paints of the house in its first picture — the design "Sage and navy":
+   Sherwin-Williams 9130 Evergreen Fog (the body), 7005 Pure White (the trim), 6244 Naval (the shutters and the door).
+   Light is the trim's world, dark is Naval's. starlight-brand.css carries the same tokens into the docs. */
+
+:root {
+  --fog: #95978a;
+  --pure-white: #edece6;
+  --naval: #2f3d4c;
+
+  --paper: #fafaf7;
+  --paper-2: #f0f0ea;
+  --ink: #20252b;
+  --ink-2: #444a52;
+  --muted: #5c6168;
+  --line: #d9d9d1;
+  --accent: var(--naval);
+  --on-accent: #ffffff;
+  --focus: #3b6fb0;
+  --shadow: 0 1px 2px rgb(32 37 43 / 0.08), 0 8px 28px rgb(32 37 43 / 0.08);
+
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-text: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --measure: 62ch;
+  --wide: 1180px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --r: 6px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #151b22;
+    --paper-2: #1d2530;
+    --ink: #edece6;
+    --ink-2: #c9cac3;
+    --muted: #9ea2a7;
+    --line: #2f3a46;
+    --accent: #b9c8d8;
+    --on-accent: #151b22;
+    --focus: #8fb4e0;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 32px rgb(0 0 0 / 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #151b22;
+  --paper-2: #1d2530;
+  --ink: #edece6;
+  --ink-2: #c9cac3;
+  --muted: #9ea2a7;
+  --line: #2f3a46;
+  --accent: #b9c8d8;
+  --on-accent: #151b22;
+  --focus: #8fb4e0;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 32px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-size: clamp(2.35rem, 5.2vw, 3.7rem);
+  line-height: 1.04;
+}
+h2 {
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  line-height: 1.12;
+}
+h3 {
+  font-size: 1.125rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+p {
+  margin: 0;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.wrap {
+  width: min(var(--wide), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+.section {
+  padding-block: clamp(56px, 9vw, 112px);
+}
+.section + .section {
+  border-top: 1px solid var(--line);
+}
+.section__head {
+  display: grid;
+  gap: 14px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+.section__head p {
+  color: var(--ink-2);
+  font-size: 1.125rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: var(--r);
+  border: 1px solid transparent;
+  font: 600 1rem/1 var(--font-text);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn--primary:hover {
+  filter: brightness(1.12);
+}
+.btn--quiet {
+  border-color: var(--line);
+  color: var(--ink);
+  background: transparent;
+}
+.btn--quiet:hover {
+  border-color: var(--ink-2);
+}
+
+/* a screenshot of the app: the window as it is, a hairline and a soft shadow */
+.screen {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  background: var(--paper-2);
+  cursor: zoom-in;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

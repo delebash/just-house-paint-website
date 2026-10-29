@@ -1,0 +1,29 @@
+{
+  "name": "just-house-paint-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/sync-docs.js --from local --silent-if-missing",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "prebuild": "node scripts/sync-docs.js --from release --silent-if-missing",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync-docs:local": "node scripts/sync-docs.js --from local",
+    "sync-docs:release": "node scripts/sync-docs.js --from release",
+    "capture": "node scripts/capture.js"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.5",
+    "astro": "^7.1.6"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1",
+    "sharp": "^0.34.5"
+  },
+  "allowScripts": {
+    "sharp": false
+  }
+}

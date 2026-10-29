@@ -1,0 +1,5 @@
+/* SPDX-License-Identifier: MIT
+   The site's two typefaces, for its own pages and the docs alike (astro.config.js customCss): Young Serif for the
+   headings — a sturdy, friendly old-style serif — and Schibsted Grotesk for everything read. Both SIL OFL, from
+   Google Fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..800&family=Young+Serif&display=swap");

@@ -1,0 +1,215 @@
+---
+// SPDX-License-Identifier: MIT
+// Everything the app does (the app's README "Features", each claim from its user docs), and every screen.
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import { DOWNLOAD } from "../data/site.js";
+import yourHouses from "../assets/screens/your-houses.webp";
+import parts from "../assets/screens/house-parts.webp";
+import painted from "../assets/screens/house-painted.webp";
+import compare from "../assets/screens/house-compare.webp";
+import colors from "../assets/screens/house-colors.webp";
+import schemes from "../assets/screens/house-schemes.webp";
+import aiPhoto from "../assets/screens/house-ai-photo.webp";
+import paintColors from "../assets/screens/paint-colors.webp";
+import aiPage from "../assets/screens/ai.webp";
+import settings from "../assets/screens/settings.webp";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const groups = [
+  {
+    title: "Your houses",
+    doc: "your-houses",
+    items: [
+      "Add a photo of the house (JPEG, PNG or WebP); the app keeps the original and paints on a copy.",
+      "Rename and delete; each house keeps its parts, designs and AI photos in its own folder.",
+    ],
+  },
+  {
+    title: "Finding the parts",
+    doc: "finding-parts",
+    items: [
+      "Meta's SAM 3 vision model, on your computer, finds the body, trim, front door, garage door, shutters, columns, railings, gutters, soffits and fascia, window trim, the chimney and wall decorations.",
+      "It also finds what isn't painted — the roof, windows, stone, brick and lamps — and leaves a neighbor's house, a parked car and a garden statue alone.",
+      "Every pixel belongs to one part: where two overlap, the more specific one keeps it.",
+      "Fix what it missed with a Brush, an Eraser, or a Box it outlines for you; Undo and Redo.",
+    ],
+  },
+  {
+    title: "Painting",
+    doc: "painting",
+    items: [
+      "Each part painted at once with a brand's paint, keeping the photo's shadows, texture and lap lines.",
+      "ΔE for each part: how close the painted wall comes to the paint chip.",
+      "On it now: tell the app the paint a part has today, and new colors show in the light that paint reveals.",
+      "Light and Texture sliders; outlines of one part, all of them, or none.",
+      "Compare with the photo as taken or another design, across a line or side by side.",
+      "Save image at full size, copy the color list, save a color card; keep several designs per house.",
+    ],
+  },
+  {
+    title: "Paint colors",
+    doc: "paint-colors",
+    items: [
+      "Sherwin-Williams, Behr, Benjamin Moore, Valspar, PPG / Glidden, HGTV Home by Sherwin-Williams and Dutch Boy, loaded by themselves and kept on your computer.",
+      "Import a brand's palette file: Adobe swatches (.ase, .aco), Excel or CSV.",
+      "Find a color by name or number or by color family; exterior colors only, or all; discontinued colors hidden unless you ask.",
+    ],
+  },
+  {
+    title: "Color schemes",
+    doc: "color-schemes",
+    items: [
+      "Harmony schemes built around the body's color.",
+      "The brand's own coordinating colors.",
+      "Schemes from an AI model that suit what stays — the roof, the stone, the windows — and the words you add.",
+      "Every color snapped to the brand's nearest real paint; Apply puts body, trim and accent on the house.",
+    ],
+  },
+  {
+    title: "The AI photo",
+    doc: "ai-photo",
+    items: [
+      "FLUX.2 [klein] 4B, on your computer, redraws only the parts you painted; your photo is put back everywhere else, and what the model repainted is locked to your paints.",
+      "About 20 seconds a picture on Windows with an 8 GB NVIDIA card. Every AI photo is kept with the house.",
+      "Installed when you want it, with its progress and Cancel; the app checks the drive has room first.",
+    ],
+  },
+  {
+    title: "AI on your terms",
+    doc: "ai-providers",
+    items: [
+      "A local model on the built-in llama.cpp engine, free; Quick Setup picks one that fits the computer.",
+      "Or your own key: OpenAI, Anthropic (Claude), Gemini, OpenRouter, DeepSeek, xAI, Mistral or any OpenAI-compatible service.",
+      "Each AI feature on its own model and settings; the graphics card shared between them by themselves.",
+      "Usage counts the calls and their cost; the AI tasks panel shows what runs, with Cancel.",
+    ],
+  },
+  {
+    title: "Around the app",
+    doc: "settings",
+    items: [
+      "Backups: everything as one file, and restore it; Reset to start over.",
+      "Storage: what takes the space, and moving the data folder to another drive.",
+      "Run the server on its own and use the app from a browser on your network, with access tokens.",
+      "Several windows stay in step; light or dark and an accent color; updates by themselves (Windows and Linux; on a Mac from the release page); logs for when something goes wrong.",
+    ],
+  },
+];
+const screens = [
+  { img: yourHouses, caption: "Your houses" },
+  { img: parts, caption: "The parts found, all outlined" },
+  { img: painted, caption: "A design painted, with each part's ΔE" },
+  { img: compare, caption: "Compared with the photo as taken" },
+  { img: colors, caption: "Choosing a paint for a part" },
+  { img: schemes, caption: "Color schemes" },
+  { img: aiPhoto, caption: "An AI photo" },
+  { img: paintColors, caption: "Paint colors: the seven brands" },
+  { img: aiPage, caption: "AI Settings" },
+  { img: settings, caption: "App Settings" },
+];
+---
+<Base title="Features — Just House Paint" description="Everything Just House Paint does, and every screen of the app.">
+  <section class="section intro">
+    <div class="wrap">
+      <h1>Everything it does</h1>
+      <p>
+        The whole list, each part with its page in the docs. Every screenshot below is the app itself, on houses from
+        Wikimedia Commons.
+      </p>
+      <a class="btn btn--primary" href={DOWNLOAD}>Download it free</a>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Features">
+    <div class="wrap groups">
+      {groups.map((g) => (
+        <div class="group">
+          <h2><a href={`${base}/docs/${g.doc}/`}>{g.title}</a></h2>
+          <ul>
+            {g.items.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="screens">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 id="screens">Every screen</h2>
+        <p>Select one to see it at full size.</p>
+      </div>
+      <div class="gallery">
+        {screens.map((s) => (
+          <figure>
+            <Image class="screen" src={s.img} alt={s.caption} widths={[560, 900]} sizes="(min-width: 900px) 560px, 100vw" />
+            <figcaption>{s.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro .wrap {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .intro p {
+    font-size: 1.2rem;
+    color: var(--ink-2);
+  }
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(32px, 5vw, 56px) clamp(32px, 6vw, 80px);
+  }
+  .group {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding-top: 18px;
+    border-top: 3px solid var(--fog);
+  }
+  .group h2 {
+    font-size: clamp(1.4rem, 2.4vw, 1.75rem);
+  }
+  .group h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .group h2 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .group ul {
+    margin: 0;
+    padding-left: 1.1em;
+    display: grid;
+    gap: 8px;
+    color: var(--ink-2);
+    max-width: 58ch;
+  }
+  @media (max-width: 860px) {
+    .groups {
+      grid-template-columns: 1fr;
+    }
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: 28px 24px;
+  }
+  .gallery figure {
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .gallery figcaption {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+</style>
