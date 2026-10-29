@@ -21,6 +21,7 @@
     "astro": "^7.1.6"
   },
   "devDependencies": {
+    "front-matter": "^4.0.2",
     "playwright": "^1.62.1",
     "sharp": "^0.35.5"
   },
