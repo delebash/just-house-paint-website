@@ -24,7 +24,7 @@ first picture: Evergreen Fog, Pure White and Naval. Young Serif for the headings
 
 ## The docs
 
-The docs are the app's own `docs/*.md`, never copied by hand. `npm run build` (and the deploy) fetches `docs.tar.gz`
+The docs are the app's own `docs/*.md`, never copied by hand. `npm run build` (and the deploy, which runs only by hand or on a release's ping — never on a push) fetches `docs.tar.gz`
 from the app's latest release; the app's release attaches it and then asks this site to rebuild (its `notify-website`
 job, the `docs-updated` dispatch). `npm run dev` copies them from `../just-house-paint/docs` when the app's repo sits
 beside this one.

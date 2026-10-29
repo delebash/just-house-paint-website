@@ -1,12 +1,12 @@
 name: Deploy to GitHub Pages
 
+# Nothing builds by itself (the user, 2026-10-28: "i dont ever want an automatic build of anything i only want
+# stuff to build when i say so"): no push or schedule trigger. The site is built by hand (the Actions page's
+# "Run workflow", or `gh workflow run deploy.yml`), or by the ping of a release the user started.
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
-  # Triggered by just-house-paint's release workflow (its notify-website job) when a release
-  # is published. The prebuild step in package.json fetches docs.tar.gz
-  # from the latest release, so the site rebuilds with the new docs.
+  # just-house-paint's release workflow (its notify-website job) when a release is published. The prebuild step
+  # in package.json fetches that release's docs.tar.gz, so the site rebuilds with the new docs.
   repository_dispatch:
     types: [docs-updated]
 
