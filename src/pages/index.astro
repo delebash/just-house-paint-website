@@ -52,7 +52,7 @@ const faq = [
   },
   {
     q: "Do I need a graphics card?",
-    a: "No. Finding the parts and painting work on any of those computers; a graphics card makes finding the parts quicker. The AI photo takes about 20 seconds on Windows with an 8 GB NVIDIA card and about ten minutes with no graphics card it can use.",
+    a: "No. Finding the parts and painting work on any of those computers; a graphics card makes finding the parts quicker. The AI photo takes about 20 seconds on Windows with an 8 GB NVIDIA card (about 15 more when it draws a small part again up close) and about ten minutes with no graphics card it can use.",
   },
   {
     q: "How close are the colors to the real paint?",
@@ -144,12 +144,12 @@ const faq = [
         </figure>
         <figure>
           <Image src={ai} alt="The AI photo of the house in Evergreen Fog, Pure White and Naval" widths={[560, 900, 1200]} sizes="(min-width: 900px) 50vw, 100vw" />
-          <figcaption>The AI photo, drawn in 23 seconds on an 8 GB NVIDIA card</figcaption>
+          <figcaption>The AI photo, drawn in 39 seconds on an 8 GB NVIDIA card — the front door drawn again up close</figcaption>
         </figure>
       </div>
       <p class="aiphoto__note">
         It runs on your computer too, once you install its engine and model from the app. About 20 seconds a picture on
-        Windows with an 8 GB NVIDIA graphics card. <a href={`${base}/docs/ai-photo/`}>About the AI photo</a>
+        Windows with an 8 GB NVIDIA graphics card, about 15 more for each small part it draws again up close. <a href={`${base}/docs/ai-photo/`}>About the AI photo</a>
       </p>
     </div>
   </section>
