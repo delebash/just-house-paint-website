@@ -1,20 +1,22 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: MIT
-// Pulls Just House Paint's user docs into Starlight's docs collection (src/content/docs/docs/, gitignored). From
-// justwrite-website's scripts/sync-docs (MIT — NOTICE.md), for this app. Two modes:
+// A family app's website: its user docs into Starlight's docs collection (src/content/docs/docs/, gitignored). The
+// kit's (just-core/website/scripts/sync-docs.js) — every site copies it as it is (the family guard checks); the
+// site's package.json `justSite` names its app: { appRepo: "owner/name", appDir: "../<app's folder>" }. From
+// justwrite-website's scripts/sync-docs.mjs (MIT — the kit's NOTICE.md).
 //
 //   node scripts/sync-docs.js --from local
-//     Copies ../just-house-paint/docs/ (the app's repo beside this one, for local work). With --silent-if-missing,
-//     no such folder is not an error.
+//     Copies <appDir>/docs (the app's repo beside the site). With --silent-if-missing, no such folder is no error.
 //
 //   node scripts/sync-docs.js --from release [--tag v0.2.0]
-//     Downloads docs.tar.gz from a release of the app (the latest by default; --tag pins one). The CI mode: the
-//     site serves the docs of the latest RELEASE, not of the app's main branch. The app's release attaches the
-//     file while the release is still a draft, so a published release always has it.
+//     The docs of a release of the app (the latest by default; --tag pins one): its docs.tar.gz, which the app's
+//     release attaches while the release is still a draft — or, for a release made before that, the same files from
+//     the tag's source. The site serves the docs of the latest RELEASE, never the app's main branch.
 //
-// Each page gets Starlight's frontmatter (its title from its first heading, its description from toc.json's hint)
-// and its links to sibling pages (`(foo.md)`) become the site's routes. toc.json — the app's Help order — is copied
-// to src/data/docs-toc.json, which astro.config.js turns into the sidebar.
+// Each page gets Starlight's frontmatter (its title from its first heading, its description from the contents
+// file's hint), a leading <!-- comment --> (an SPDX line) and the first heading go, and its links to sibling pages
+// (`(foo.md)`) become the site's routes. The app's contents file (toc.json — its Help order) is copied to
+// src/data/docs-toc.json for the site's sidebar; a group is `{ group | section, items: [{ slug, hint? }] }`.
 
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
@@ -24,15 +26,24 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TARGET = resolve(ROOT, "src/content/docs/docs");
 const TOC_TARGET = resolve(ROOT, "src/data/docs-toc.json");
-const APP_REPO = "delebash/just-house-paint";
-const LOCAL_APP = resolve(ROOT, "..", "just-house-paint", "docs");
+const site = JSON.parse(await readFile(resolve(ROOT, "package.json"), "utf8")).justSite ?? {};
+const APP_REPO = site.appRepo;
+const LOCAL_APP = resolve(ROOT, site.appDir ?? "..", "docs");
+if (!APP_REPO) {
+  console.error('sync-docs: package.json has no justSite.appRepo ("owner/name" of the app whose docs this site shows)');
+  process.exit(1);
+}
 
-// The links' absolute base: astro.config.js's `base`. Relative forms break under GitHub Pages' trailing slashes
+// The links' absolute base: the Astro config's `base`. Relative forms break under GitHub Pages' trailing slashes
 // (./slug from /docs/foo/ is /docs/foo/slug).
 async function readDocsBase() {
-  const conf = await readFile(resolve(ROOT, "astro.config.js"), "utf8");
-  const m = conf.match(/base:\s*['"]([^'"]+)['"]/);
-  return `${(m ? m[1] : "").replace(/\/$/, "")}/docs`;
+  for (const name of ["astro.config.js", "astro.config.mjs"]) {
+    try {
+      const m = (await readFile(resolve(ROOT, name), "utf8")).match(/base:\s*['"]([^'"]+)['"]/);
+      return `${(m ? m[1] : "").replace(/\/$/, "")}/docs`;
+    } catch {}
+  }
+  return "/docs";
 }
 
 function arg(name, hasValue = false) {
@@ -75,8 +86,8 @@ async function processFile(srcPath, docsBase, hints) {
   const slug = fileName === "README.md" ? "index" : fileName.replace(/\.md$/, "");
   const raw = await readFile(srcPath, "utf8");
   const title = titleOf(raw, slug);
-  // The leading comment (SPDX) and H1 go: Starlight renders the frontmatter's title. `[^\r\n]*`, not `.+`: in a
-  // CRLF checkout `.` stops at the \r and the H1 stayed (justwrite-website's finding — every title twice).
+  // the leading comment (an SPDX line) and the H1 go: Starlight renders the frontmatter's title. `[^\r\n]*`, not
+  // `.+`: in a CRLF checkout `.` stops at the \r and the H1 stayed (justwrite-website's finding — every title twice)
   const stripped = raw.replace(/^<!--[^]*?-->\s*/, "").replace(/^#\s+[^\r\n]*\r?\n+/, "");
   const hint = hints.get(slug);
   const frontmatter = `---\ntitle: "${escapeYaml(title)}"\n${hint ? `description: "${escapeYaml(hint)}"\n` : ""}---\n\n`;
@@ -84,7 +95,7 @@ async function processFile(srcPath, docsBase, hints) {
   return slug;
 }
 
-// toc.json across, and slug → hint for the pages' descriptions
+// the contents file across, and slug → hint for the pages' descriptions
 async function syncToc(dir) {
   const src = join(dir, "toc.json");
   if (!(await exists(src))) throw new Error(`no toc.json in ${dir} — the app's Help order, which the sidebar follows`);
@@ -152,8 +163,8 @@ async function fromRelease() {
     return syncFromDir(join(tmpDir, "docs"));
   }
   if (res.status !== 404) throw new Error(`download failed: ${res.status} ${res.statusText} from ${url}`);
-  // A release made before the app attached docs.tar.gz (v0.1.3 and earlier): the same docs from the release's own
-  // tagged source — still the released docs, never the main branch's.
+  // a release made before the app attached docs.tar.gz: the same docs from the release's own tagged source — still
+  // the released docs, never the main branch's
   const src = `https://codeload.github.com/${APP_REPO}/tar.gz/refs/tags/${tag}`;
   console.log(`sync-docs: ${tag} has no docs.tar.gz — its docs from the tag's source`);
   const tagged = await fetch(src);

@@ -13,7 +13,8 @@
     "astro": "astro",
     "sync-docs:local": "node scripts/sync-docs.js --from local",
     "sync-docs:release": "node scripts/sync-docs.js --from release",
-    "capture": "node scripts/capture.js"
+    "capture": "node scripts/capture.js",
+    "deploy": "node scripts/deploy.js"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.5",
@@ -25,5 +26,10 @@
   },
   "allowScripts": {
     "sharp": false
+  },
+  "justSite": {
+    "appRepo": "delebash/just-house-paint",
+    "appDir": "../just-house-paint",
+    "siteRepo": "delebash/just-house-paint-website"
   }
 }

@@ -96,6 +96,13 @@ await radio("Outlines", "Off");
 await tab("Parts");
 await shot("house-painted");
 
+console.log("→ the house: Daylight, morning or evening sun");
+await page.getByLabel("Daylight", { exact: true }).click();
+await page.getByRole("option", { name: "Morning or evening sun" }).click();
+await shot("house-daylight");
+await page.getByLabel("Daylight", { exact: true }).click();
+await page.getByRole("option", { name: "As photographed" }).click();
+
 console.log("→ the house: compared with the photo");
 await page.getByLabel("Compare with", { exact: true }).click();
 await page.getByRole("option", { name: "The photo as taken" }).click();

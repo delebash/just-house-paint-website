@@ -19,15 +19,16 @@ first picture: Evergreen Fog, Pure White and Naval. Young Serif for the headings
 | `src/components/` | `BeforeAfter` (the compare line), `Chip` (a paint chip) |
 | `src/styles/` | `global.css` (the tokens), `starlight-brand.css` (the same look in the docs), `fonts.css` |
 | `src/assets/screens/`, `src/assets/photos/` | the app's screenshots and the photos — taken by `scripts/capture.js` |
-| `scripts/sync-docs.js` | the app's user docs into Starlight (`src/content/docs/docs/`, gitignored) |
-| `.github/workflows/deploy.yml` | the build and GitHub Pages deploy |
+| `scripts/sync-docs.js`, `scripts/deploy.js`, `.github/workflows/deploy.yml` | the family's website parts — the kit's `just-core/website/` files, copied as they are (the family guard checks): the app's user docs into Starlight (`src/content/docs/docs/`, gitignored), `npm run deploy`, and the GitHub Pages build |
+| `package.json` `justSite` | the app (`delebash/just-house-paint`, beside this repo) and this site's repository, which the scripts read |
 
-## The docs
+## The docs and publishing
 
-The docs are the app's own `docs/*.md`, never copied by hand. `npm run build` (and the deploy, which runs only by hand or on a release's ping — never on a push) fetches `docs.tar.gz`
-from the app's latest release; the app's release attaches it and then asks this site to rebuild (its `notify-website`
-job, the `docs-updated` dispatch). `npm run dev` copies them from `../just-house-paint/docs` when the app's repo sits
-beside this one.
+The docs are the app's own `docs/*.md`, never copied by hand: `npm run build` takes them from the app's latest
+release (its `docs.tar.gz`, or the tag's source for a release made before the app attached it); `npm run dev` from
+`../just-house-paint/docs`. The site is published only when you say so: **`npm run deploy`** names the release whose
+docs go live, asks, then runs this repository's own workflow (your `gh` login — no token anywhere). Nothing builds by
+itself: no push, no schedule, no other repository's workflow starts it.
 
 ## Commands
 
@@ -36,6 +37,7 @@ npm install
 npm run dev        # the site on localhost:4321, the docs from ../just-house-paint/docs
 npm run build      # into dist/, the docs from the app's latest release
 npm run preview    # dist/ served locally
+npm run deploy     # publish it on GitHub Pages (asks first; --yes to skip the question)
 ```
 
 ## The pictures

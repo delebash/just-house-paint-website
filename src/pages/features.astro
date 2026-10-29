@@ -7,6 +7,7 @@ import { DOWNLOAD } from "../data/site.js";
 import yourHouses from "../assets/screens/your-houses.webp";
 import parts from "../assets/screens/house-parts.webp";
 import painted from "../assets/screens/house-painted.webp";
+import daylight from "../assets/screens/house-daylight.webp";
 import compare from "../assets/screens/house-compare.webp";
 import colors from "../assets/screens/house-colors.webp";
 import schemes from "../assets/screens/house-schemes.webp";
@@ -43,8 +44,10 @@ const groups = [
       "ΔE for each part: how close the painted wall comes to the paint chip.",
       "On it now: tell the app the paint a part has today, and new colors show in the light that paint reveals.",
       "Light and Texture sliders; outlines of one part, all of them, or none.",
+      "Daylight: the whole photo in morning or evening sun, midday sun, or shade — a preview of how the paints move with the day.",
       "Compare with the photo as taken or another design, across a line or side by side.",
-      "Save image at full size, copy the color list, save a color card; keep several designs per house.",
+      "A finish for each part (flat to gloss), named on the color list and the color card for the store.",
+      "Save image at full size, copy the color list, save a color card; keep several designs per house, and use one on your other photos of the house.",
     ],
   },
   {
@@ -54,6 +57,7 @@ const groups = [
       "Sherwin-Williams, Behr, Benjamin Moore, Valspar, PPG / Glidden, HGTV Home by Sherwin-Williams and Dutch Boy, loaded by themselves and kept on your computer.",
       "Import a brand's palette file: Adobe swatches (.ase, .aco), Excel or CSV.",
       "Find a color by name or number or by color family; exterior colors only, or all; discontinued colors hidden unless you ask.",
+      "The same color in other brands: each one's nearest color, with how close it is.",
     ],
   },
   {
@@ -100,8 +104,9 @@ const screens = [
   { img: yourHouses, caption: "Your houses" },
   { img: parts, caption: "The parts found, all outlined" },
   { img: painted, caption: "A design painted, with each part's ΔE" },
+  { img: daylight, caption: "Daylight: the same paints in morning or evening sun" },
   { img: compare, caption: "Compared with the photo as taken" },
-  { img: colors, caption: "Choosing a paint for a part" },
+  { img: colors, caption: "Choosing a paint for a part: its finish, and the same color in other brands" },
   { img: schemes, caption: "Color schemes" },
   { img: aiPhoto, caption: "An AI photo" },
   { img: paintColors, caption: "Paint colors: the seven brands" },

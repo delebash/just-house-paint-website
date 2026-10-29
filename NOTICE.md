@@ -5,11 +5,12 @@
 From [justwrite-website](https://github.com/delebash/justwrite-website) (MIT, Copyright (c) 2026 JustWrite
 contributors), adapted for this site:
 
-- `scripts/sync-docs.js` — its `scripts/sync-docs.mjs`: the docs from the app's release (`docs.tar.gz`) or the app's
-  repo beside it, into Starlight's collection, with the page titles, descriptions and links rewritten.
+- `scripts/sync-docs.js` and `.github/workflows/deploy.yml` — through the family kit's `website/` files (just-core,
+  which credits the same in its NOTICE.md): its `scripts/sync-docs.mjs` (the docs from the app's release or the app's
+  repo beside it, into Starlight's collection) and its `deploy.yml`, made generic and run by hand only.
 - `astro.config.js` — the docs' sidebar from the app's `toc.json`, and the light/dark bridge between the site's pages
   and Starlight's.
-- `src/content.config.js` and `.github/workflows/deploy.yml` — as they were.
+- `src/content.config.js` — as it was.
 
 ```
 MIT License
